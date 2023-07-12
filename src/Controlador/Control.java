@@ -29,7 +29,6 @@ public class Control implements ActionListener{
     }
     public void recibirDatos(){
         File archivo = new File("files/archivo.txt");
-        System.out.println(lista);
         try {
             FileReader reader = new FileReader(archivo);
             try (BufferedReader buffer = new BufferedReader(reader)) {
@@ -55,9 +54,6 @@ public class Control implements ActionListener{
                                 System.out.println("El precio no es un número válido. Inténtalo de nuevo.");
                             }
                         } 
-                        // else {
-                        //     System.out.println("La línea no contiene los elementos necesarios. Inténtalo de nuevo.");
-                        // }
                     }
                 }
             }
@@ -65,7 +61,6 @@ public class Control implements ActionListener{
             e.printStackTrace();
         }
 
-        System.out.println(lista);
     }
     public void actualizarDatos() {
         String elemento = "";
@@ -87,9 +82,7 @@ public class Control implements ActionListener{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(lista);
         lista.clear();
-        System.out.println(lista);
     }
     
     public void iniciarVista(){   
@@ -123,7 +116,6 @@ public class Control implements ActionListener{
             vista.add(vista.panelInsertar);
         }
         else if(evento.getSource()==vista.botonEnviarInsertar){
-            String material = "";
             Short precio = 0; 
             boolean ValorError = false;
             if(vista.areaTextoNombre.getText().isEmpty() || vista.areaTextoPrecio.getText().isEmpty() || vista.areaTextoCantidad.getText().isEmpty()){
@@ -132,9 +124,7 @@ public class Control implements ActionListener{
             else{
            try {
                 String userInput = vista.areaTextoPrecio.getText();
-                String userInput2 = vista.areaTextoCantidad.getText();
                 precio = Short.parseShort(userInput);
-                material = userInput2; 
                 
                 ValorError = false;
 
@@ -162,7 +152,7 @@ public class Control implements ActionListener{
                     JOptionPane.showMessageDialog(null,"Error","Advertencia",JOptionPane.WARNING_MESSAGE);
                 }
                 else{
-                    Traje n1 = new Traje(vista.areaTextoNombre.getText(),codigo,material,vista.categorias.getSelectedItem().toString(),precio);
+                    Traje n1 = new Traje(vista.areaTextoNombre.getText(),codigo,vista.areaTextoCantidad.getText(),vista.categorias.getSelectedItem().toString(),precio);
                     modelo.lista_trajes.add(n1);
                     actualizarDatos();
                     recibirDatos();
