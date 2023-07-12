@@ -5,9 +5,11 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 
@@ -67,18 +69,19 @@ public class Control implements ActionListener{
     }
     public void actualizarDatos() {
         String elemento = "";
+       try (PrintWriter writer = new PrintWriter("files/archivo.txt")) {
+            writer.print("");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("files/archivo.txt", true))) {
             for (int i = 0; i < lista.size(); i++) {
-                elemento = lista.get(i).getNombre();
-                writer.write(elemento + " ");
-                elemento = lista.get(i).getCodigo();
-                writer.write(elemento + " ");
-                elemento = lista.get(i).getpais_fabricacion();
-                writer.write(elemento + " ");
-                elemento = lista.get(i).getmaterial();
-                writer.write(elemento + " ");
-                elemento = String.valueOf(lista.get(i).getPrecio());
-                writer.write(elemento + " ");
+                elemento = lista.get(i).getNombre() + " ";
+                elemento += lista.get(i).getCodigo()+ " ";
+                elemento += lista.get(i).getpais_fabricacion()+" ";
+                elemento += lista.get(i).getmaterial()+" ";
+                elemento += String.valueOf(lista.get(i).getPrecio())+" ";
+                writer.write(elemento);
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -162,6 +165,7 @@ public class Control implements ActionListener{
                     Traje n1 = new Traje(vista.areaTextoNombre.getText(),codigo,material,vista.categorias.getSelectedItem().toString(),precio);
                     modelo.lista_trajes.add(n1);
                     actualizarDatos();
+                    recibirDatos();
                     
                     JOptionPane.showMessageDialog(null,"El codigo del producto es: " + codigo, "CODIGO", JOptionPane.INFORMATION_MESSAGE);
                     vista.areaTextoNombre.setText(null);
@@ -189,6 +193,7 @@ public class Control implements ActionListener{
             
         }
         else if(evento.getSource()==vista.botonEnviarActualizar){
+            boolean valor = false;
             for(int i =0 ; i<modelo.lista_trajes.size() ; i++){
                 if(vista.areaTextoActualizar.getText().equals(modelo.lista_trajes.get(i).getCodigo())){
                     if(vista.areaTextoActualizar.getText().isEmpty() || vista.areaTextoActualizar.getText().length()<6){
@@ -199,20 +204,20 @@ public class Control implements ActionListener{
                     vista.panelActualizar.setVisible(false);             
                     vista.panelActualizarDatos.setVisible(true);
                     vista.add(vista.panelActualizarDatos);
+                    valor = true;
+                    break;
                     }
-                break;
                 }
-                else{
-                    JOptionPane.showMessageDialog(null,"El codigo que ingresa al parecer no existe","Advertencia",JOptionPane.WARNING_MESSAGE);
-                }
+
+            }
+            if(!valor){
+                JOptionPane.showMessageDialog(null,"El codigo que ingresa al parecer no existe","Advertencia",JOptionPane.WARNING_MESSAGE);
             }
                
         }
         else if(evento.getSource() == vista.botonEnviarActualizarOpciones){
             Boolean campos_vacios = false;
             Boolean ValorError = false;
-            String material_actualizar ="";
-            Short precio_actualizar = 0; 
             vista.contenido5 = vista.areaTextoActualizarNombre.getText().trim();
             vista.contenido6 = vista.areaTextoActualizarPrecio.getText().trim();
             vista.contenido7 = vista.areaTextoActualizarCantidad.getText().trim();
@@ -225,11 +230,7 @@ public class Control implements ActionListener{
             }
             try {
                 if (!(vista.contenido6.isEmpty() || vista.contenido7.isEmpty())){
-                String precio = vista.areaTextoActualizarPrecio.getText();
-                String material = vista.areaTextoActualizarCantidad.getText();
-                precio_actualizar = Short.parseShort(precio);
-                material_actualizar = material; 
-                
+           
                 ValorError = false; 
                 }
             } catch (NumberFormatException e) {
@@ -244,11 +245,11 @@ public class Control implements ActionListener{
                         
                         }
                     if(vista.checkBox2.isSelected()){
-                        modelo.lista_trajes.get(i).setPrecio(precio_actualizar);
+                        modelo.lista_trajes.get(i).setPrecio(Short.parseShort(vista.areaTextoActualizarPrecio.getText()));
                         
                     }
                     if(vista.checkBox3.isSelected()){
-                        modelo.lista_trajes.get(i).setMaterial(material_actualizar);      
+                        modelo.lista_trajes.get(i).setMaterial(vista.areaTextoActualizarCantidad.getText());      
                         
                     }
                 }
@@ -283,6 +284,7 @@ public class Control implements ActionListener{
             
         }
         else if(evento.getSource() == vista.botonEliminar){
+            boolean valor = false;
             vista.contenido8 = vista.areaTextoEliminar.getText().trim();
             for(int i =0 ; i<modelo.lista_trajes.size() ; i++){
                 if(vista.contenido8.equals(modelo.lista_trajes.get(i).getCodigo())){
@@ -293,20 +295,20 @@ public class Control implements ActionListener{
                         if(modelo.lista_trajes.get(i).getCodigo().equals(vista.contenido8)){
                             modelo.lista_trajes.remove(modelo.lista_trajes.get(i));
                         }
-                        
                         JOptionPane.showMessageDialog(null,"Producto Eliminado","Eliminado",JOptionPane.INFORMATION_MESSAGE);
                         vista.areaTextoEliminar.setText(null);
                         vista.panelEliminar.setVisible(false);
                         vista.panelPrincipal.setVisible(true);
                         vista.add(vista.panelPrincipal);
+                        valor = true;
                         break;
                     }
                     
-                }
-                else{
+                }   
+            }
+            if(!valor){
                     JOptionPane.showMessageDialog(null,"El codigo que ingresa al parecer no existe","Advertencia",JOptionPane.WARNING_MESSAGE);
                 }
-            }
             actualizarDatos();
             recibirDatos();
         }
