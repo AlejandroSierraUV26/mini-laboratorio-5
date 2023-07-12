@@ -2,6 +2,14 @@ package Controlador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
 
 import javax.swing.JOptionPane;
 
@@ -11,13 +19,78 @@ import Vista.Ventana;
 public class Control implements ActionListener{
     private Traje modelo;
     private Ventana vista;
+    public ArrayList<Traje> lista = new ArrayList<Traje>();
 
     public Control(Traje modelo, Ventana vista){
         this.modelo = modelo;
         this.vista = vista;
-        
     }
-    public void iniciarVista(){
+    public void recibirDatos(){
+        File archivo = new File("files/archivo.txt");
+        System.out.println(lista);
+        try {
+            FileReader reader = new FileReader(archivo);
+            try (BufferedReader buffer = new BufferedReader(reader)) {
+                String linea;
+                while ((linea = buffer.readLine()) != null) {
+                    boolean elementosCompletos = false;
+
+                    while (!elementosCompletos) {
+                        String[] palabras = linea.split(" ");
+
+                        if (palabras.length >= 5) {
+                            String nombre = palabras[0];
+                            String codigo = palabras[1];
+                            String pais = palabras[2];
+                            String material = palabras[3];
+                            Short precio;
+                            try {
+                                precio = Short.parseShort(palabras[4]);
+                                Traje item = new Traje(nombre, codigo , pais, material, precio);
+                                lista.add(item);
+                                elementosCompletos = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("El precio no es un número válido. Inténtalo de nuevo.");
+                            }
+                        } 
+                        // else {
+                        //     System.out.println("La línea no contiene los elementos necesarios. Inténtalo de nuevo.");
+                        // }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(lista);
+    }
+    public void actualizarDatos() {
+        String elemento = "";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("files/archivo.txt", true))) {
+            for (int i = 0; i < lista.size(); i++) {
+                elemento = lista.get(i).getNombre();
+                writer.write(elemento + " ");
+                elemento = lista.get(i).getCodigo();
+                writer.write(elemento + " ");
+                elemento = lista.get(i).getpais_fabricacion();
+                writer.write(elemento + " ");
+                elemento = lista.get(i).getmaterial();
+                writer.write(elemento + " ");
+                elemento = String.valueOf(lista.get(i).getPrecio());
+                writer.write(elemento + " ");
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(lista);
+        lista.clear();
+        System.out.println(lista);
+    }
+    
+    public void iniciarVista(){   
+        recibirDatos();     
         vista.setSize(500, 500); 
         vista.setTitle("RINCON DULCE");
         vista.setResizable(false);
@@ -39,6 +112,7 @@ public class Control implements ActionListener{
     }
     @Override
     public void actionPerformed(ActionEvent evento) {
+        modelo.lista_trajes = lista;
         vista.categoriaSeleccionada = vista.categorias.getSelectedItem().toString();
         if(evento.getSource() == vista.botonesPanelPrincipal[0]){
             vista.panelPrincipal.setVisible(false);
@@ -85,12 +159,13 @@ public class Control implements ActionListener{
                     JOptionPane.showMessageDialog(null,"Error","Advertencia",JOptionPane.WARNING_MESSAGE);
                 }
                 else{
-                    Traje n1 = new Traje(vista.areaTextoNombre.getText(),codigo,vista.categorias.getSelectedItem().toString(),material,precio);
+                    Traje n1 = new Traje(vista.areaTextoNombre.getText(),codigo,material,vista.categorias.getSelectedItem().toString(),precio);
                     modelo.lista_trajes.add(n1);
+                    actualizarDatos();
                     
                     JOptionPane.showMessageDialog(null,"El codigo del producto es: " + codigo, "CODIGO", JOptionPane.INFORMATION_MESSAGE);
                     vista.areaTextoNombre.setText(null);
-                    vista.categorias.setSelectedItem("Acido");
+                    vista.categorias.setSelectedItem("Lana");
                     vista.areaTextoPrecio.setText(null);;
                     vista.areaTextoCantidad.setText(null);
                     vista.panelInsertar.setVisible(false);
@@ -178,6 +253,8 @@ public class Control implements ActionListener{
                     }
                 }
             }
+            actualizarDatos();
+            recibirDatos();
             JOptionPane.showMessageDialog(null,"Producto Actualizado","Actualizado",JOptionPane.INFORMATION_MESSAGE);
             vista.checkBox1.setSelected(false);
             vista.checkBox2.setSelected(false);
@@ -230,6 +307,8 @@ public class Control implements ActionListener{
                     JOptionPane.showMessageDialog(null,"El codigo que ingresa al parecer no existe","Advertencia",JOptionPane.WARNING_MESSAGE);
                 }
             }
+            actualizarDatos();
+            recibirDatos();
         }
         else if(evento.getSource() == vista.botonesPanelPrincipal[3]){
             vista.panelPrincipal.setVisible(false);
@@ -237,6 +316,7 @@ public class Control implements ActionListener{
             vista.add(vista.panelBuscar);
         }
         else if(evento.getSource() == vista.botonBuscar){
+            boolean valor = false;
             vista.contenido9 = vista.areaTextoBuscar.getText().trim();
             for(int i =0 ; i<modelo.lista_trajes.size() ; i++){
                 if(vista.contenido9.equals(modelo.lista_trajes.get(i).getCodigo())){
@@ -249,14 +329,18 @@ public class Control implements ActionListener{
                             vista.etiquetaBuscarCategoria.setText("Pais Fabricacion: "+ modelo.lista_trajes.get(i).getpais_fabricacion());
                             vista.etiquetaBuscarCantidad.setText("Material: "+ modelo.lista_trajes.get(i).getmaterial());
                             vista.etiquetaBuscarPrecio.setText("Precio: " + modelo.lista_trajes.get(i).getPrecio());
+                            valor = true;
+                            break;
                         }
                     }
-                    break;
-                }
-                else{
-                    JOptionPane.showMessageDialog(null,"El codigo que ingresa al parecer no existe","Advertencia",JOptionPane.WARNING_MESSAGE);
+                    
                 }
             }
+            if(!valor){
+                JOptionPane.showMessageDialog(null,"El codigo que ingresa al parecer no existe","Advertencia",JOptionPane.WARNING_MESSAGE);
+            }
+            actualizarDatos();
+            recibirDatos();
         }
         else if(evento.getSource() == vista.botonRegresar){
             vista.areaTextoBuscar.setText(null);
