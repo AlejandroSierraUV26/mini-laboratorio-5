@@ -32,7 +32,7 @@ public class Ventana extends JFrame {
     public JTextArea areaTextoNombre, areaTextoPrecio, areaTextoCantidad, areaTextoActualizar, areaTextoActualizarNombre, areaTextoActualizarPrecio, areaTextoActualizarCantidad, areaTextoEliminar, areaTextoBuscar, areaTextoListar, areaTextoComprar, areaTextoListarComprar;
     String[] opciones = {"Lana","Lino","Algodón"};
     public JComboBox<String> categorias;
-    public String contenido, contenido2, contenido3, contenido4, contenido5, contenido6, contenido7, contenido8, contenido9, categoriaSeleccionada;
+    public String contenido, contenido2, contenido3, contenido4, contenido5, contenido6, contenido7, contenido8, contenido9, contenido10, categoriaSeleccionada;
     JScrollPane scroll, scroll2, scroll3, scroll4, scroll5, scroll6, scroll7, scroll8;
     public JCheckBox checkBox1, checkBox2, checkBox3;
     public Ventana(){
@@ -384,7 +384,7 @@ public class Ventana extends JFrame {
             }
         });
 
-        botonComprar = new JButton("Eliminar");
+        botonComprar = new JButton("Comprar");
         botonComprar.setBorder(BorderFactory.createLineBorder(Color.decode("#171717"),110));
         botonComprar.setFont(new Font("Arial", Font.BOLD, 30));
 

@@ -22,6 +22,7 @@ public class Control implements ActionListener{
     private Traje modelo;
     private Ventana vista;
     public ArrayList<Traje> lista = new ArrayList<Traje>();
+    public ArrayList<Traje> lista_vendidos = new ArrayList<Traje>();
 
     public Control(Traje modelo, Ventana vista){
         this.modelo = modelo;
@@ -86,12 +87,13 @@ public class Control implements ActionListener{
     }
     
     public void iniciarVista(){   
-        recibirDatos();     
+        recibirDatos();  
+        recibirDatosVendidos();   
         vista.setSize(500, 500); 
         vista.setTitle("RINCON DULCE");
         vista.setResizable(false);
         vista.setLocationRelativeTo(null);
-        for(int i = 0;i<5;i++ ){
+        for(int i = 0;i<7;i++ ){
             vista.botonesPanelPrincipal[i].addActionListener(this);
         }
         vista.botonEnviarActualizar.addActionListener(this);
@@ -101,6 +103,8 @@ public class Control implements ActionListener{
         vista.botonBuscar.addActionListener(this);
         vista.botonRegresar.addActionListener(this);
         vista.botonRegresarListar.addActionListener(this);
+        vista.botonComprar.addActionListener(this);
+        vista.botonRegresarListarComprar.addActionListener(this);
         vista.setVisible(true);
 
 
@@ -357,6 +361,123 @@ public class Control implements ActionListener{
             vista.panelListar.setVisible(false);
             vista.panelPrincipal.setVisible(true);
             vista.add(vista.panelPrincipal);
+        }
+       else if(evento.getSource() == vista.botonesPanelPrincipal[5]){
+            if(modelo.lista_trajes.size() >0){
+                vista.panelPrincipal.setVisible(false);
+                vista.panelComprar.setVisible(true);
+                vista.add(vista.panelComprar);
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"No se pueden Comprar Trajes, sino ha ingresado al menos 1","Advertencia",JOptionPane.WARNING_MESSAGE);
+            }
+            
+        }
+        else if(evento.getSource() == vista.botonComprar){
+            boolean valor = false;
+            vista.contenido10 = vista.areaTextoComprar.getText().trim();
+            for(int i =0 ; i<modelo.lista_trajes.size() ; i++){
+                if(vista.contenido10.equals(modelo.lista_trajes.get(i).getCodigo())){
+                    if(vista.contenido10.isEmpty() || vista.contenido10.length()<6){
+                        JOptionPane.showMessageDialog(null,"El codigo debe ser de 6 caracteres","Advertencia",JOptionPane.WARNING_MESSAGE);
+                    }
+                    else{
+                        if(modelo.lista_trajes.get(i).getCodigo().equals(vista.contenido10)){
+                            actualizarDatosVentas(modelo.lista_trajes.get(i));
+                            recibirDatosVendidos();
+                            modelo.lista_trajes.remove(modelo.lista_trajes.get(i));
+
+                        }
+                        JOptionPane.showMessageDialog(null,"Producto Vendido","Compra",JOptionPane.INFORMATION_MESSAGE);
+                        vista.areaTextoComprar.setText(null);
+                        vista.panelComprar.setVisible(false);
+                        vista.panelPrincipal.setVisible(true);
+                        vista.add(vista.panelPrincipal);
+                        valor = true;
+                        break;
+                    }
+                    
+                }   
+            }
+            if(!valor){
+                    JOptionPane.showMessageDialog(null,"El codigo que ingresa al parecer no existe","Advertencia",JOptionPane.WARNING_MESSAGE);
+                }
+            actualizarDatos();
+            recibirDatos();
+        }
+        else if(evento.getSource() == vista.botonesPanelPrincipal[6]){
+            for(int i = 0; i<lista_vendidos.size(); i++){
+                vista.areaTextoListarComprar.append(lista_vendidos.get(i).MostrarDatos() + "\n\n");
+            }
+            vista.panelPrincipal.setVisible(false);
+            vista.panelListarComprar.setVisible(true);            
+            vista.add(vista.panelListarComprar);
+        }
+        else if(evento.getSource() == vista.botonRegresarListarComprar){
+            vista.areaTextoListarComprar.setText(null);
+            vista.panelListarComprar.setVisible(false);
+            vista.panelPrincipal.setVisible(true);
+            vista.add(vista.panelPrincipal);
+        }
+        
+
+    }
+    public void actualizarDatosVentas(Traje trajeComprado){
+        lista_vendidos.add(trajeComprado);  
+        String elemento = "";
+       try (PrintWriter writer = new PrintWriter("files/vendidos.txt")) {
+            writer.print("");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("files/vendidos.txt", true))) {
+            for (int i = 0; i < lista_vendidos.size(); i++) {
+                    elemento = lista_vendidos.get(i).getNombre() + " ";
+                    elemento += lista_vendidos.get(i).getCodigo()+ " ";
+                    elemento += lista_vendidos.get(i).getpais_fabricacion()+" ";
+                    elemento += lista_vendidos.get(i).getmaterial()+" ";
+                    elemento += String.valueOf(lista_vendidos.get(i).getPrecio())+" ";
+                    writer.write(elemento);
+                    writer.newLine();
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        lista_vendidos.clear();
+    }
+    public void recibirDatosVendidos(){
+        File archivo = new File("files/vendidos.txt");
+        try {
+            FileReader reader = new FileReader(archivo);
+            try (BufferedReader buffer = new BufferedReader(reader)) {
+                String linea;
+                while ((linea = buffer.readLine()) != null) {
+                    boolean elementosCompletos = false;
+
+                    while (!elementosCompletos) {
+                        String[] palabras = linea.split(" ");
+
+                        if (palabras.length >= 5) {
+                            String nombre = palabras[0];
+                            String codigo = palabras[1];
+                            String pais = palabras[2];
+                            String material = palabras[3];
+                            Short precio;
+                            try {
+                                precio = Short.parseShort(palabras[4]);
+                                Traje item = new Traje(nombre, codigo , pais, material, precio);
+                                lista_vendidos.add(item);
+                                elementosCompletos = true;
+                            } catch (NumberFormatException e) {
+                                System.out.println("El precio no es un número válido. Inténtalo de nuevo.");
+                            }
+                        } 
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
