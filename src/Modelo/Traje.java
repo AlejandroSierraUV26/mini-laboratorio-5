@@ -4,22 +4,22 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-public class Dulce {
-    public ArrayList <Dulce> lista_dulces = new ArrayList<Dulce>();
+public class Traje {
+    public ArrayList <Traje> lista_trajes = new ArrayList<Traje>();
     private String nombre;
-    private String categoria;
-    private short cantidad;
+    private String pais_fabricacion;
+    private String material;
     private short precio;
     private String codigo;
-    public Dulce(String nombre,String codigo, String categoria, short cantidad, short precio){
+    public Traje(String nombre,String codigo, String pais_fabricacion, String material, short precio){
         this.nombre = nombre;
         this.codigo = codigo;
-        this.categoria = categoria;
-        this.cantidad = cantidad;
+        this.pais_fabricacion = pais_fabricacion;
+        this.material = material;
         this.precio = precio;
 
     }
-    public Dulce() {
+    public Traje() {
     }
     public String getCodigo() {
         return codigo;
@@ -33,17 +33,17 @@ public class Dulce {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    public String getCategoria() {
-        return categoria;
+    public String getpais_fabricacion() {
+        return pais_fabricacion;
     }
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setpais_fabricacion(String pais_fabricacion) {
+        this.pais_fabricacion = pais_fabricacion;
     }
-    public short getCantidad() {
-        return cantidad;
+    public String getmaterial() {
+        return material;
     }
-    public void setCantidad(short cantidad) {
-        this.cantidad = cantidad;
+    public void setMaterial(String material) {
+        this.material = material;
     }
     public short getPrecio() {
         return precio;
@@ -56,15 +56,15 @@ public class Dulce {
         texto =(   "           Nombre: " + getNombre()+"                            \n"
                 +  "           Codigo : "+ getCodigo() +"                           \n" 
                 +  "           Precio : "+ getPrecio() +"                           \n"
-                +  "           Categoria : " + getCategoria() +"                \n"                
-                +  "           Cantidad : "+ getCantidad()+"                       "); 
+                +  "           Pais Fabricacion : " + getpais_fabricacion() +"                \n"                
+                +  "           Material : "+ getmaterial()+"                       "); 
         return texto;
     }
-        public ArrayList<Dulce> getLista_dulces() {
-        return lista_dulces;
+    public ArrayList<Traje> getlista_trajes() {
+        return lista_trajes;
     }
-    public void setLista_dulces(ArrayList<Dulce> lista_dulces) {
-        this.lista_dulces = lista_dulces;
+    public void setlista_trajes(ArrayList<Traje> lista_trajes) {
+        this.lista_trajes = lista_trajes;
     }
     public void psbotonInsertar(){
         JOptionPane.showMessageDialog(null,"Boton Insertar Precionado");

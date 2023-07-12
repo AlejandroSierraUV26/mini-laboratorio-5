@@ -5,14 +5,14 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
 
-import Modelo.Dulce;
+import Modelo.Traje;
 import Vista.Ventana;
 
 public class Control implements ActionListener{
-    private Dulce modelo;
+    private Traje modelo;
     private Ventana vista;
 
-    public Control(Dulce modelo, Ventana vista){
+    public Control(Traje modelo, Ventana vista){
         this.modelo = modelo;
         this.vista = vista;
         
@@ -46,7 +46,7 @@ public class Control implements ActionListener{
             vista.add(vista.panelInsertar);
         }
         else if(evento.getSource()==vista.botonEnviarInsertar){
-            Short cantidad =0;
+            String material = "";
             Short precio = 0; 
             boolean ValorError = false;
             if(vista.areaTextoNombre.getText().isEmpty() || vista.areaTextoPrecio.getText().isEmpty() || vista.areaTextoCantidad.getText().isEmpty()){
@@ -57,7 +57,7 @@ public class Control implements ActionListener{
                 String userInput = vista.areaTextoPrecio.getText();
                 String userInput2 = vista.areaTextoCantidad.getText();
                 precio = Short.parseShort(userInput);
-                cantidad = Short.parseShort(userInput2); 
+                material = userInput2; 
                 
                 ValorError = false;
 
@@ -85,8 +85,8 @@ public class Control implements ActionListener{
                     JOptionPane.showMessageDialog(null,"Error","Advertencia",JOptionPane.WARNING_MESSAGE);
                 }
                 else{
-                    Dulce n1 = new Dulce(vista.areaTextoNombre.getText(),codigo,vista.categorias.getSelectedItem().toString(),cantidad,precio);
-                    modelo.lista_dulces.add(n1);
+                    Traje n1 = new Traje(vista.areaTextoNombre.getText(),codigo,vista.categorias.getSelectedItem().toString(),material,precio);
+                    modelo.lista_trajes.add(n1);
                     
                     JOptionPane.showMessageDialog(null,"El codigo del producto es: " + codigo, "CODIGO", JOptionPane.INFORMATION_MESSAGE);
                     vista.areaTextoNombre.setText(null);
@@ -103,7 +103,7 @@ public class Control implements ActionListener{
             
         }
         else if(evento.getSource() == vista.botonesPanelPrincipal[1]){
-            if(modelo.lista_dulces.size() >0){
+            if(modelo.lista_trajes.size() >0){
                 vista.panelPrincipal.setVisible(false);
                 vista.panelActualizar.setVisible(true);
                 vista.add(vista.panelActualizar);
@@ -114,8 +114,8 @@ public class Control implements ActionListener{
             
         }
         else if(evento.getSource()==vista.botonEnviarActualizar){
-            for(int i =0 ; i<modelo.lista_dulces.size() ; i++){
-                if(vista.areaTextoActualizar.getText().equals(modelo.lista_dulces.get(i).getCodigo())){
+            for(int i =0 ; i<modelo.lista_trajes.size() ; i++){
+                if(vista.areaTextoActualizar.getText().equals(modelo.lista_trajes.get(i).getCodigo())){
                     if(vista.areaTextoActualizar.getText().isEmpty() || vista.areaTextoActualizar.getText().length()<6){
                         JOptionPane.showMessageDialog(null,"El codigo debe ser de 6 caracteres","Advertencia",JOptionPane.WARNING_MESSAGE);
                     }
@@ -136,7 +136,7 @@ public class Control implements ActionListener{
         else if(evento.getSource() == vista.botonEnviarActualizarOpciones){
             Boolean campos_vacios = false;
             Boolean ValorError = false;
-            Short cantidad_actualizar =0;
+            String material_actualizar ="";
             Short precio_actualizar = 0; 
             vista.contenido5 = vista.areaTextoActualizarNombre.getText().trim();
             vista.contenido6 = vista.areaTextoActualizarPrecio.getText().trim();
@@ -151,9 +151,9 @@ public class Control implements ActionListener{
             try {
                 if (!(vista.contenido6.isEmpty() || vista.contenido7.isEmpty())){
                 String precio = vista.areaTextoActualizarPrecio.getText();
-                String cantidad = vista.areaTextoActualizarCantidad.getText();
+                String material = vista.areaTextoActualizarCantidad.getText();
                 precio_actualizar = Short.parseShort(precio);
-                cantidad_actualizar = Short.parseShort(cantidad); 
+                material_actualizar = material; 
                 
                 ValorError = false; 
                 }
@@ -162,18 +162,18 @@ public class Control implements ActionListener{
                 ValorError = true;
             }
             if (campos_vacios && !ValorError){
-            for(int i=0; i<modelo.lista_dulces.size();i++){
-                if(modelo.lista_dulces.get(i).getCodigo().equals(vista.areaTextoActualizar.getText())){
+            for(int i=0; i<modelo.lista_trajes.size();i++){
+                if(modelo.lista_trajes.get(i).getCodigo().equals(vista.areaTextoActualizar.getText())){
                     if(vista.checkBox1.isSelected()){
-                        modelo.lista_dulces.get(i).setNombre(vista.contenido5);
+                        modelo.lista_trajes.get(i).setNombre(vista.contenido5);
                         
                         }
                     if(vista.checkBox2.isSelected()){
-                        modelo.lista_dulces.get(i).setPrecio(precio_actualizar);
+                        modelo.lista_trajes.get(i).setPrecio(precio_actualizar);
                         
                     }
                     if(vista.checkBox3.isSelected()){
-                        modelo.lista_dulces.get(i).setCantidad(cantidad_actualizar);      
+                        modelo.lista_trajes.get(i).setMaterial(material_actualizar);      
                         
                     }
                 }
@@ -195,7 +195,7 @@ public class Control implements ActionListener{
         }
 
         else if(evento.getSource() == vista.botonesPanelPrincipal[2]){
-            if(modelo.lista_dulces.size() >0){
+            if(modelo.lista_trajes.size() >0){
                 vista.panelPrincipal.setVisible(false);
                 vista.panelEliminar.setVisible(true);
                 vista.add(vista.panelEliminar);
@@ -207,14 +207,14 @@ public class Control implements ActionListener{
         }
         else if(evento.getSource() == vista.botonEliminar){
             vista.contenido8 = vista.areaTextoEliminar.getText().trim();
-            for(int i =0 ; i<modelo.lista_dulces.size() ; i++){
-                if(vista.contenido8.equals(modelo.lista_dulces.get(i).getCodigo())){
+            for(int i =0 ; i<modelo.lista_trajes.size() ; i++){
+                if(vista.contenido8.equals(modelo.lista_trajes.get(i).getCodigo())){
                     if(vista.contenido8.isEmpty() || vista.contenido8.length()<6){
                         JOptionPane.showMessageDialog(null,"El codigo debe ser de 6 caracteres","Advertencia",JOptionPane.WARNING_MESSAGE);
                     }
                     else{
-                        if(modelo.lista_dulces.get(i).getCodigo().equals(vista.contenido8)){
-                            modelo.lista_dulces.remove(modelo.lista_dulces.get(i));
+                        if(modelo.lista_trajes.get(i).getCodigo().equals(vista.contenido8)){
+                            modelo.lista_trajes.remove(modelo.lista_trajes.get(i));
                         }
                         
                         JOptionPane.showMessageDialog(null,"Producto Eliminado","Eliminado",JOptionPane.INFORMATION_MESSAGE);
@@ -238,17 +238,17 @@ public class Control implements ActionListener{
         }
         else if(evento.getSource() == vista.botonBuscar){
             vista.contenido9 = vista.areaTextoBuscar.getText().trim();
-            for(int i =0 ; i<modelo.lista_dulces.size() ; i++){
-                if(vista.contenido9.equals(modelo.lista_dulces.get(i).getCodigo())){
+            for(int i =0 ; i<modelo.lista_trajes.size() ; i++){
+                if(vista.contenido9.equals(modelo.lista_trajes.get(i).getCodigo())){
                     if(vista.contenido9.isEmpty() || vista.contenido9.length()<6){
                         JOptionPane.showMessageDialog(null,"El codigo debe ser de 6 caracteres","Advertencia",JOptionPane.WARNING_MESSAGE);
                     }
                     else{
-                        if(modelo.lista_dulces.get(i).getCodigo().equals(vista.contenido9)){
-                            vista.etiquetaBuscarNombre.setText("Nombre: " + modelo.lista_dulces.get(i).getNombre());
-                            vista.etiquetaBuscarCategoria.setText("Categoria: "+ modelo.lista_dulces.get(i).getCategoria());
-                            vista.etiquetaBuscarCantidad.setText("Cantidad: "+ modelo.lista_dulces.get(i).getCantidad());
-                            vista.etiquetaBuscarPrecio.setText("Precio: " + modelo.lista_dulces.get(i).getPrecio());
+                        if(modelo.lista_trajes.get(i).getCodigo().equals(vista.contenido9)){
+                            vista.etiquetaBuscarNombre.setText("Nombre: " + modelo.lista_trajes.get(i).getNombre());
+                            vista.etiquetaBuscarCategoria.setText("Pais Fabricacion: "+ modelo.lista_trajes.get(i).getpais_fabricacion());
+                            vista.etiquetaBuscarCantidad.setText("Material: "+ modelo.lista_trajes.get(i).getmaterial());
+                            vista.etiquetaBuscarPrecio.setText("Precio: " + modelo.lista_trajes.get(i).getPrecio());
                         }
                     }
                     break;
@@ -269,8 +269,8 @@ public class Control implements ActionListener{
             vista.add(vista.panelPrincipal);
         }
         else if(evento.getSource() == vista.botonesPanelPrincipal[4]){
-            for(int i = 0; i<modelo.lista_dulces.size(); i++){
-                vista.areaTextoListar.append(modelo.lista_dulces.get(i).MostrarDatos() + "\n\n");
+            for(int i = 0; i<modelo.lista_trajes.size(); i++){
+                vista.areaTextoListar.append(modelo.lista_trajes.get(i).MostrarDatos() + "\n\n");
             }
             vista.panelPrincipal.setVisible(false);
             vista.panelListar.setVisible(true);            
